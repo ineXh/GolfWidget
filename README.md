@@ -1,9 +1,7 @@
-# AWS Lex Chat Bot
+# Golf Widget
 
-Chat Bot with flower shop tutorial
+Sample Widget
 
 # Link
-https://inexh.github.io/LexFlowerShop/index.html
+https://inexh.github.io/a/index.html
 
-# Sample Utterance
-I want flowers.
