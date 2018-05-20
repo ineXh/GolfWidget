@@ -2,9 +2,9 @@
 *.tmp
 node_modules/*
 src/client/public/bundle.js
-bundle.js
-bundle.css
-style-bundle.js
+!bundle.js
+!bundle.css
+!style-bundle.js
 
 *.log
 *.xlsx

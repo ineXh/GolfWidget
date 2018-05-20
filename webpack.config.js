@@ -26,7 +26,7 @@ var scss_rule = {
 var app_jsx_config = {
   entry: './src/client/app/index.jsx', //APP_DIR + '/index.jsx', // //
   output: {
-    path: BUILD_DIR,
+    //path: BUILD_DIR,
     filename: 'bundle.js'
   },
   module : {
@@ -62,7 +62,8 @@ var app_jsx_config = {
 
 var app_scss_config =
   {
-    entry: './app.scss',
+    //entry: './app.scss',
+    entry: './src/client/app/css/styles/app.scss',
     //entry: './linear-progress.scss',
     output: {
       // This is necessary for webpack to compile
