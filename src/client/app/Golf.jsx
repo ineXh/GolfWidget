@@ -1,7 +1,12 @@
 import React, {Component} from 'react';
-import {MDCLinearProgress} from '@material/linear-progress/dist/mdc.linearProgress';
+//import {MDCLinearProgress} from '@material/linear-progress/dist/mdc.linearProgress';
+import {MDCLinearProgress} from '@material/linear-progress';
 
-import './css/styles/LinearProgressIndicatorCatalog.scss';
+//import './css/styles/LinearProgressIndicatorCatalog.scss';
+//import './../../../linear-progress.scss';
+//import './css/styles/LinearProgressIndicatorCatalog.css';
+//import css from './css/styles/LinearProgressIndicatorCatalog.css';
+
 class Golf extends React.Component {
 
   constructor(props) {
@@ -14,7 +19,6 @@ class Golf extends React.Component {
   render() {
     return (
       <div>
-        Hello 2
         <LinearProgressDemos/>
       </div>
     );
@@ -41,9 +45,12 @@ class LinearProgressDemos extends Component {
     indicator.buffer = 0.75;
     indicators.push(indicator);
   }
-
+  componentDidMount() {
+    console.log('did mount')
+    //this.indicators.forEach(indicator => indicator.destroy());
+  }
   componentWillUnmount() {
-    this.indicators.forEach(indicator => indicator.destroy());
+    indicators.forEach(indicator => indicator.destroy());
   }
 
   renderLinearProgressVariant(title, variantClass, buffer) {

@@ -63,6 +63,7 @@ var app_jsx_config = {
 var app_scss_config =
   {
     entry: './app.scss',
+    //entry: './linear-progress.scss',
     output: {
       // This is necessary for webpack to compile
       // But we never use style-bundle.js
@@ -89,6 +90,7 @@ var app_config =
       }]
     },
   }
-//app_jsx_config, 
-config = [app_scss_config, app_config]
+//app_jsx_config,
+//config = [app_scss_config, app_config]
+config = [app_jsx_config, app_scss_config]
 module.exports = config;
