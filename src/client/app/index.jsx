@@ -5,9 +5,7 @@ import Golf from './Golf.jsx';
 class App extends React.Component {
   render() {
     return (
-      <div>
-        <Golf/>
-      </div>
+        <Golf numStages={this.props.numStages}/>
     );
   }
 }
@@ -15,7 +13,7 @@ class App extends React.Component {
 class Empty extends React.Component {
   render () { return false; }
 }
-window.renderApp = function(element) {
-  render(<App/>, document.getElementById('GolfWidget'));
+window.renderApp = function(appID, numStages) {
+  render(<App numStages={numStages}/>, document.getElementById(appID));
 }
-renderApp();
+renderApp('GolfWidget', 5);

@@ -1,4 +1,7 @@
 @import "@material/linear-progress/mdc-linear-progress";
+@import "@material/theme/color-palette";
+@import "@material/icon-toggle/mdc-icon-toggle";
+
 html, body {
   height: 100%;
 }
@@ -11,4 +14,83 @@ body {
 
 .header {
   text-align: center;
+}
+
+.linear-progress--custom {
+  @include mdc-linear-progress-bar-color($material-color-blue-500);
+  @include mdc-linear-progress-buffer-color($material-color-blue-100);
+}
+
+
+#golf{
+	position:absolute;
+	bottom: 50%;
+	left: 25%;
+	width: 50%
+}
+
+.iconX{
+	width: 24px;
+	height: 24px;
+	position: relative;
+    left: 0px; /*calc(50% - 3px);*/
+    top: 0px;
+}
+#light-on-bg {
+  position:absolute;
+  top: -12px;
+  left: -12px;
+  border-radius: 12px;
+  width: 24px;
+  height: 24px;
+  box-shadow: 0 0 0 4px #ccc;
+  background-color: #3e82f7;
+  background-color: white;
+}
+
+#light-on-bg .mdc-icon-toggle {
+  @include mdc-icon-toggle-ink-color(#3e82f7);
+  @include mdc-states-base-color(#3e82f7);
+  @include mdc-states-hover-opacity(.1);
+  @include mdc-states-focus-opacity(.3);
+  @include mdc-states-press-opacity(.4);
+}
+
+
+.dot-object{
+	background-color: #FFF;
+	box-shadow: 0 0 0 4px #ccc;
+	border-radius: 3px;
+    width: 6px;
+    height: 6px;
+    position:absolute;
+	top: 0px;
+	left: 8px;
+	opacity: 1;
+}
+.dotY {
+  animation: yAxis 1s linear;
+}
+.dotX {
+  animation: xAxis 1s linear;
+}
+
+@keyframes xAxis {
+  100% {
+    animation-timing-function: linear;
+    transform: translateX(100px);
+  }
+}
+
+@keyframes yAxis {
+  50% {
+    animation-timing-function: cubic-bezier(0.55, 0.09, 0.68, 0.53); /* In Quadratic */
+    transform: translateY(-50px);
+    opacity: 0.5;
+  }
+  100% {
+    animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Out Quadratic */
+    transform: translateY(0px);
+    opacity: 1;
+  }
 }
