@@ -26,7 +26,7 @@ body {
 	position:absolute;
 	bottom: 50%;
 	left: 25%;
-	width: 50%
+	/*width: 50%*/
 }
 
 .iconX{
@@ -58,7 +58,7 @@ body {
 
 
 .dot-object{
-	background-color: #FFF;
+	background-color: #3e82f7;
 	box-shadow: 0 0 0 4px #ccc;
 	border-radius: 3px;
     width: 6px;
@@ -69,10 +69,10 @@ body {
 	opacity: 1;
 }
 .dotY {
-  animation: yAxis 1s linear;
+  animation: yAxis 1s linear infinite;
 }
 .dotX {
-  animation: xAxis 1s linear;
+  animation: xAxis 1s linear infinite;
 }
 
 @keyframes xAxis {

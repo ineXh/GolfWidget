@@ -8,31 +8,102 @@ import {MDCIconToggle} from '@material/icon-toggle';
 //import css from './css/styles/LinearProgressIndicatorCatalog.css';
 //var indicator = null;
 window.indicator = null;
-var icon = null;
+window.icon = null;
+window.showBall = null;
+window.updateBallX = null;
+var ballTimeOut = null;
+window.findKeyframesRule = function(rule){
+    // gather all stylesheets into an array
+    var ss = document.styleSheets;
+    // loop through the stylesheets
+    for (var i = 0; i < ss.length; ++i) {
+        // loop through all the rules
+        try{
+          ss[i].cssRules
+        }
+        catch(error){
+          //console.error(error)
+          continue;
+        }
+          for (var j = 0; j < ss[i].cssRules.length; j++) {
+              if (ss[i].cssRules[j].name == rule)
+                //debugger;
+                  return [i, j]; //ss[i].cssRules[j];
+          }
+    }
+    // rule not found
+    return null;
+}
+
 class Golf extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      numStages: 0,
+      width: 400,
+      stages: [],
+      showBall: true
+    }
+    showBall = this.showBall.bind(this);
+    updateBallX = this.updateBallX.bind(this);
+    //this.togglePosition = this.togglePosition.bind(this);
   }
   componentDidMount(){
-    console.log(this.props)
+    //console.log(this.props)
+    this.state.numStages = this.props.numStages;
+    this.state.width = this.props.width;
+    this.updateStage(this.props.numStages)
+    this.updateBallX(this.state.gap);
+    //this.showBall(true)
+  }
+  updateStage(numStage){
+    var stages = [];
+    for(var i = 0; i < this.state.numStages; i++){
+      stages.push(i)
+    }
+    this.state.gap = (this.state.numStages > 0) ? (this.state.width/(this.state.numStages-1)): 0;
+    this.setState({stages: stages})
+  }
+  showBall(bool){
+    this.setState({showBall: bool})
+    if(!bool) clearTimeout(ballTimeOut)
+    if(bool) ballTimeOut = setTimeout(function(){ showBall(false) }, 1000);
+  }
+  updateBallX(x){
+    showBall(true);
+    var indices = findKeyframesRule('xAxis')
+    var i = indices[0]
+    var j = indices[1]
+    var ss = document.styleSheets;
+    ss[i].deleteRule(j);
+    var rule = "@keyframes xAxis { 100% { animation-timing-function: linear; transform: translateX(" + x + "px); }}"
+    ss[i].insertRule(rule);
+    /*while(keyframesRule.cssRules.length > 0){
+      ss[.deleteRule(keyframesRule.cssRules[0].keyText)
+    }
+    console.log(rule)
+    keyframesRule.appendRule(rule)*/
   }
   initLinearProgressBufferIndicator(indicatorEl){
     //console.log('initBufferIndicator')
     if (!indicatorEl) return;
+    //console.log(indicatorEl)
     indicator = new MDCLinearProgress(indicatorEl);
     indicator.progress = 0.5;
     indicator.buffer = 1.0;
     //indicators.push(indicator);
   }
-  initIcon(iconEl){
-    if(!iconEl) return;
-
+  togglePosition(position){
+    //console.log('togglePosition')
+    //console.log(position)
+    indicator.progress = position / (this.state.numStages-1);
   }
   render() {
-    var icon = 'golf_course';
-    //var icon = '';
+    var golfStyle = {
+      width: this.state.width + 'px'
+    };
     return (
-      <div id="golf">
+      <div id="golf" style={golfStyle}>
         <div role="progressbar" className="mdc-linear-progress linear-progress--custom"
           ref={this.initLinearProgressBufferIndicator}>
           <div className="mdc-linear-progress__buffering-dots"></div>
@@ -44,32 +115,90 @@ class Golf extends React.Component {
             <span className="mdc-linear-progress__bar-inner"></span>
           </div>
         </div>
-        <div id="light-on-bg" className="demo-color-combo">
+
+        {this.state.showBall ? this.renderBall() : null}
+        {this.renderPositions()}
+      </div>
+    );
+  } // end render
+  renderBall(){
+    //console.log('renderBall')
+    return(
+      <div className="dotX"><div className="dotY dot-object"></div></div>
+      )
+  }
+  renderPositions(){
+    var gap = this.state.gap;
+    //console.log('width ' + this.state.width)
+    //console.log('gap ' + gap)
+    var numStages = this.state.numStages;
+    var togglePosition = this.togglePosition.bind(this);
+    var positionNodes = this.state.stages.map(function(position, index){
+      var x = position*gap;
+      return(
+          <PositionItem
+            x = {x}
+            numStages = {numStages}
+            position = {position}
+            togglePosition = {togglePosition}
+            key = {index}/>
+        );
+    });
+    return(
+      <div id="Positions">
+        {positionNodes}
+      </div>
+      );
+  } // end renderPositions
+} // end Golf
+
+class PositionItem extends Component {
+  constructor(props) {
+    super(props);
+    //this.onClick = this.onClick.bind(this);
+  }
+  initIcon(iconEl){
+    if(!iconEl) return;
+    //console.log(iconEl)
+    icon = MDCIconToggle.attachTo(iconEl);
+  }
+  onClick(event){
+    //console.log(this.props.position)
+    this.props.togglePosition(this.props.position)
+    //indicator.progress = this.props.position / (this.props.numStages-1);
+  }
+  render() {
+    //console.log(this.props)
+    //window.innerWidth/2
+    var x = this.props.x + 'px'
+    var divStyle = {
+      left: x
+    };
+    return (
+      <div>
+        <div id="light-on-bg" className="demo-color-combo" style={divStyle}>
             <i className="mdc-icon-toggle material-icons mdc-theme--on-primary iconX"
                role="button"
                aria-label="Add to favorites"
                aria-pressed="false"
                tabIndex="0"
-               data-toggle-on='{"content": "golf_course_on", "label": "Remove From Favorites"}'
-               data-toggle-off='{"content": "golf_course_off", "label": "Add to Favorites"}'>
-              {icon}
+               data-toggle-on='{"content": "golf_course", "label": "Remove From Favorites"}'
+               data-toggle-off='{"content": "golf_course", "label": "Add to Favorites"}'
+               onClick = {this.onClick.bind(this)}
+               ref={this.initIcon}>
             </i>
         </div>
-
-        <div className="dotX"><div className="dotY dot-object"></div></div>
       </div>
     );
   }
-} // end Golf
+} // end PositionItem
 
-/*
- <i className="mdc-icon-toggle material-icons" role="button" aria-pressed="false"
-           aria-label="Add to favorites" tabIndex="0"
-           data-toggle-on='{"label": "Remove from favorites", "content": "golf_course"}'
-           data-toggle-off='{"label": "Add to favorites", "content": "golf_course"}'
-           ref={iconToggleEl => iconToggleEl && MDCIconToggle.attachTo(iconToggleEl)}>
-        </i>
-        */
+//onClick={this.props.togglePosition.call(this.props.position)}
+
+
+
+
+
 
 var indicators = []
 class LinearProgressDemos extends Component {
