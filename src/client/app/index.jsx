@@ -5,9 +5,7 @@ import Golf from './Golf.jsx';
 class App extends React.Component {
   render() {
     return (
-        <Golf
-        	numStages = {this.props.numStages}
-        	width 	  = {this.props.width}/>
+        <Golf input = {this.props.input}/>
     );
   }
 }
@@ -18,11 +16,15 @@ class Empty extends React.Component {
 window.renderEmpty = function(element) {
   render(<Empty/>, document.getElementById(element));
 }
-window.renderApp = function(appID, numStages, width) {
+window.renderApp = function(appID, input) {
   render(<App
-  		numStages={numStages}
-  		width={width}
+  		input={input}
   	/>, document.getElementById(appID));
 }
 //renderEmpty('GolfWidget')
-renderApp('GolfWidget', 5, window.innerWidth*0.5);
+renderApp('GolfWidget',
+	{totalStages: 5,
+	 currentStage: 0,
+	 unlockedStages: 3,
+	 width: 400 //window.innerWidth*0.5
+	});

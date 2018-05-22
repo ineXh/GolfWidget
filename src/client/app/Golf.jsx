@@ -39,10 +39,13 @@ class Golf extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      numStages: 0,
-      width: 400,
+      totalStages: 0,
+      currentStage: 0,
+      unlockedStages: 0,
       stages: [],
-      showBall: true
+      width: 400,
+      showBall: false,
+      ballx0: 0
     }
     showBall = this.showBall.bind(this);
     updateBallX = this.updateBallX.bind(this);
@@ -50,18 +53,20 @@ class Golf extends React.Component {
   }
   componentDidMount(){
     //console.log(this.props)
-    this.state.numStages = this.props.numStages;
-    this.state.width = this.props.width;
-    this.updateStage(this.props.numStages)
-    this.updateBallX(this.state.gap);
+    this.state.totalStages    = this.props.input.totalStages;
+    this.state.currentStage   = this.props.input.currentStage;
+    this.state.unlockedStages = this.props.input.unlockedStages;
+    this.state.width = this.props.input.width;
+    this.updateStage(this.props.totalStages)
+    this.updateBallX(0, this.state.gap);
     //this.showBall(true)
   }
   updateStage(numStage){
     var stages = [];
-    for(var i = 0; i < this.state.numStages; i++){
+    for(var i = 0; i < this.state.totalStages; i++){
       stages.push(i)
     }
-    this.state.gap = (this.state.numStages > 0) ? (this.state.width/(this.state.numStages-1)): 0;
+    this.state.gap = (this.state.totalStages > 0) ? (this.state.width/(this.state.totalStages-1)): 0;
     this.setState({stages: stages})
   }
   showBall(bool){
@@ -69,14 +74,15 @@ class Golf extends React.Component {
     if(!bool) clearTimeout(ballTimeOut)
     if(bool) ballTimeOut = setTimeout(function(){ showBall(false) }, 1000);
   }
-  updateBallX(x){
-    showBall(true);
+  updateBallX(x0, dist){
+    //showBall(true);
+    this.state.ballx0 = x0;
     var indices = findKeyframesRule('xAxis')
     var i = indices[0]
     var j = indices[1]
     var ss = document.styleSheets;
     ss[i].deleteRule(j);
-    var rule = "@keyframes xAxis { 100% { animation-timing-function: linear; transform: translateX(" + x + "px); }}"
+    var rule = "@keyframes xAxis { 100% { animation-timing-function: linear; transform: translateX(" + dist + "px); }}"
     ss[i].insertRule(rule);
     /*while(keyframesRule.cssRules.length > 0){
       ss[.deleteRule(keyframesRule.cssRules[0].keyText)
@@ -89,14 +95,14 @@ class Golf extends React.Component {
     if (!indicatorEl) return;
     //console.log(indicatorEl)
     indicator = new MDCLinearProgress(indicatorEl);
-    indicator.progress = 0.5;
+    indicator.progress = this.state.currentStage / (this.state.totalStages-1);
     indicator.buffer = 1.0;
     //indicators.push(indicator);
   }
   togglePosition(position){
     //console.log('togglePosition')
     //console.log(position)
-    indicator.progress = position / (this.state.numStages-1);
+    indicator.progress = position / (this.state.totalStages-1);
   }
   render() {
     var golfStyle = {
@@ -105,7 +111,7 @@ class Golf extends React.Component {
     return (
       <div id="golf" style={golfStyle}>
         <div role="progressbar" className="mdc-linear-progress linear-progress--custom"
-          ref={this.initLinearProgressBufferIndicator}>
+          ref={this.initLinearProgressBufferIndicator.bind(this)}>
           <div className="mdc-linear-progress__buffering-dots"></div>
           <div className="mdc-linear-progress__buffer"></div>
           <div className="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
@@ -123,22 +129,34 @@ class Golf extends React.Component {
   } // end render
   renderBall(){
     //console.log('renderBall')
+    var ballStyle = {
+      left: (this.state.ballx0 + 8) + 'px',
+    }
     return(
-      <div className="dotX"><div className="dotY dot-object"></div></div>
+      <div className="dotX"><div className="dotY dot-object" style={ballStyle}></div></div>
       )
   }
   renderPositions(){
     var gap = this.state.gap;
     //console.log('width ' + this.state.width)
     //console.log('gap ' + gap)
-    var numStages = this.state.numStages;
+    var totalStages = this.state.totalStages;
+    var currentStage = this.state.currentStage;
+    var unlockedStages = this.state.unlockedStages;
+
     var togglePosition = this.togglePosition.bind(this);
     var positionNodes = this.state.stages.map(function(position, index){
       var x = position*gap;
+      //console.log("currentStage " + currentStage)
+      //console.log("position " + position)
+      var on_off = (currentStage > position) ? true : false;
+      var locked = (position > unlockedStages-1) ? true : false;
+      console.log(locked)
       return(
           <PositionItem
             x = {x}
-            numStages = {numStages}
+            on_off = {on_off}
+            locked = {locked}
             position = {position}
             togglePosition = {togglePosition}
             key = {index}/>
@@ -165,25 +183,29 @@ class PositionItem extends Component {
   onClick(event){
     //console.log(this.props.position)
     this.props.togglePosition(this.props.position)
-    //indicator.progress = this.props.position / (this.props.numStages-1);
+    //indicator.progress = this.props.position / (this.props.totalStages-1);
   }
   render() {
     //console.log(this.props)
     //window.innerWidth/2
     var x = this.props.x + 'px'
+    var backgroundColor = (this.props.on_off) ? 'blue' : 'white';
+    //console.log('this.props.on_off ' + this.props.on_off)
+    var icon = (this.props.locked) ? 'lock' : 'golf_course';
     var divStyle = {
-      left: x
+      left: x,
+      backgroundColor: backgroundColor
     };
     return (
       <div>
         <div id="light-on-bg" className="demo-color-combo" style={divStyle}>
             <i className="mdc-icon-toggle material-icons mdc-theme--on-primary iconX"
                role="button"
-               aria-label="Add to favorites"
+               aria-label="label XY"
                aria-pressed="false"
                tabIndex="0"
-               data-toggle-on='{"content": "golf_course", "label": "Remove From Favorites"}'
-               data-toggle-off='{"content": "golf_course", "label": "Add to Favorites"}'
+               data-toggle-on = {'{"content": "' + icon + '", "label": "label X"}'}
+               data-toggle-off= {'{"content": "' + icon + '", "label": "label Y"}'} // lock
                onClick = {this.onClick.bind(this)}
                ref={this.initIcon}>
             </i>
