@@ -26,7 +26,7 @@ var scss_rule = {
 var app_jsx_config = {
   entry: './src/client/app/index.jsx', //APP_DIR + '/index.jsx', // //
   output: {
-    //path: BUILD_DIR,
+    path: BUILD_DIR,
     filename: 'bundle.js'
   },
   module : {
@@ -68,6 +68,7 @@ var app_scss_config =
     output: {
       // This is necessary for webpack to compile
       // But we never use style-bundle.js
+      path: BUILD_DIR,
       filename: 'style-bundle.js',
     },
     module: {

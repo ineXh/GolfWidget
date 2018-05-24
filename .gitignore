@@ -5,6 +5,7 @@ src/client/public/bundle.js
 !bundle.js
 !bundle.css
 !style-bundle.js
+!dist/*
 
 *.log
 *.xlsx

@@ -17,6 +17,8 @@ let indicator = null;
 function Widget(){
 }
 Widget.prototype = {
+  showBall: null,
+  updateBallX: null,
   gotoStage: null,
   prevStage: null,
   nextStage: null,
@@ -59,12 +61,14 @@ class Golf extends React.Component {
       width: 400,
       gap: 0,
       ballTime: 0,
+      cannotShowBall: false,
       showBall: false,
       ballx0: 0
     }
-    //showBall = this.showBall.bind(this);
-    //updateBallX = this.updateBallX.bind(this);
+    
     //this.togglePosition = this.togglePosition.bind(this);
+    golfWidget.showBall = this.showBall.bind(this);
+    golfWidget.updateBallX = this.updateBallX.bind(this);
     golfWidget.gotoStage = this.gotoStage.bind(this);
     golfWidget.prevStage = this.prevStage.bind(this);
     golfWidget.nextStage = this.nextStage.bind(this);
@@ -115,6 +119,7 @@ class Golf extends React.Component {
     this.setState({stages: stages})
   }
   showBall(bool){
+    if(this.state.cannotShowBall) return;
     this.setState({showBall: bool})
     var showBall = this.showBall.bind(this)
     if(!bool) clearTimeout(ballTimeOut)
@@ -124,6 +129,10 @@ class Golf extends React.Component {
     //showBall(true);
     this.state.ballx0 = x0;
     var indices = findKeyframesRule('xAxis')
+    if(indices == null){
+      this.state.cannotShowBall = true;
+      return; // if this is null, the animation will not work
+    }
     var i = indices[0]
     var j = indices[1]
     var ss = document.styleSheets;
@@ -151,7 +160,7 @@ class Golf extends React.Component {
     //console.log('this.state.unlockedStages: ' + this.state.unlockedStages)
     if(position < this.state.unlockedStages){
       var date = new Date();
-      if(date.getTime() - this.state.ballTime > 500){
+      if(date.getTime() - this.state.ballTime > 500 || (this.state.cannotShowBall)){
         var x0 = this.state.currentStage*this.state.gap;
         var x1 = position*this.state.gap;
         var dist = x1-x0
