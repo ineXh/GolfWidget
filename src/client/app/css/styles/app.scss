@@ -69,10 +69,10 @@ body {
 	opacity: 1;
 }
 .dotY {
-  animation: yAxis 1s linear infinite;
+  animation: yAxis 0.5s linear infinite;
 }
 .dotX {
-  animation: xAxis 1s linear infinite;
+  animation: xAxis 0.5s linear infinite;
 }
 
 @keyframes xAxis {

@@ -22,9 +22,3 @@ window.renderApp = function(appID, input) {
   	/>, document.getElementById(appID));
 }
 //renderEmpty('GolfWidget')
-renderApp('GolfWidget',
-	{totalStages: 5,
-	 currentStage: 0,
-	 unlockedStages: 3,
-	 width: 400 //window.innerWidth*0.5
-	});

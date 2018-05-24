@@ -6,13 +6,25 @@ import {MDCIconToggle} from '@material/icon-toggle';
 //import './../../../linear-progress.scss';
 //import './css/styles/LinearProgressIndicatorCatalog.css';
 //import css from './css/styles/LinearProgressIndicatorCatalog.css';
-//var indicator = null;
-window.indicator = null;
-window.icon = null;
-window.showBall = null;
-window.updateBallX = null;
-var ballTimeOut = null;
-window.findKeyframesRule = function(rule){
+
+//window.indicator = null;
+//window.icon = null;
+//window.showBall = null;
+//window.updateBallX = null;
+let ballTimeOut = null;
+let indicator = null;
+
+function Widget(){
+}
+Widget.prototype = {
+  gotoStage: null,
+  prevStage: null,
+  nextStage: null,
+  unlockStage: null,
+}
+window.golfWidget = new Widget();
+
+var findKeyframesRule = function(rule){
     // gather all stylesheets into an array
     var ss = document.styleSheets;
     // loop through the stylesheets
@@ -43,13 +55,21 @@ class Golf extends React.Component {
       currentStage: 0,
       unlockedStages: 0,
       stages: [],
+      cb: null,
       width: 400,
+      gap: 0,
+      ballTime: 0,
       showBall: false,
       ballx0: 0
     }
-    showBall = this.showBall.bind(this);
-    updateBallX = this.updateBallX.bind(this);
+    //showBall = this.showBall.bind(this);
+    //updateBallX = this.updateBallX.bind(this);
     //this.togglePosition = this.togglePosition.bind(this);
+    golfWidget.gotoStage = this.gotoStage.bind(this);
+    golfWidget.prevStage = this.prevStage.bind(this);
+    golfWidget.nextStage = this.nextStage.bind(this);
+    golfWidget.unlockStage = this.unlockStage.bind(this);
+
   }
   componentDidMount(){
     //console.log(this.props)
@@ -57,9 +77,34 @@ class Golf extends React.Component {
     this.state.currentStage   = this.props.input.currentStage;
     this.state.unlockedStages = this.props.input.unlockedStages;
     this.state.width = this.props.input.width;
+    this.state.cb = this.props.input.cb;
     this.updateStage(this.props.totalStages)
     this.updateBallX(0, this.state.gap);
     //this.showBall(true)
+  }
+  gotoStage(position){
+    this.processPosition(position)
+  }
+  prevStage(){
+    //console.log('prevStage')
+    if(this.state.currentStage > 0){
+      this.processPosition(this.state.currentStage-1)
+    }else{
+      this.processPosition(this.state.currentStage)
+    }
+  }
+  nextStage(){
+    //console.log('nextStage')
+    if(this.state.currentStage < this.state.unlockedStages-1){
+        this.processPosition(this.state.currentStage+1)
+    }else{
+      this.processPosition(this.state.currentStage)
+    }
+  }
+  unlockStage(){
+    if(this.state.unlockedStages < this.state.totalStages){
+      this.setState({unlockedStages: this.state.unlockedStages + 1})
+    }
   }
   updateStage(numStage){
     var stages = [];
@@ -71,8 +116,9 @@ class Golf extends React.Component {
   }
   showBall(bool){
     this.setState({showBall: bool})
+    var showBall = this.showBall.bind(this)
     if(!bool) clearTimeout(ballTimeOut)
-    if(bool) ballTimeOut = setTimeout(function(){ showBall(false) }, 1000);
+    if(bool) ballTimeOut = setTimeout(function(){ showBall(false) }, 500);
   }
   updateBallX(x0, dist){
     //showBall(true);
@@ -99,10 +145,27 @@ class Golf extends React.Component {
     indicator.buffer = 1.0;
     //indicators.push(indicator);
   }
-  togglePosition(position){
+  processPosition(position){
     //console.log('togglePosition')
-    //console.log(position)
-    indicator.progress = position / (this.state.totalStages-1);
+    //console.log('position: ' + position)
+    //console.log('this.state.unlockedStages: ' + this.state.unlockedStages)
+    if(position < this.state.unlockedStages){
+      var date = new Date();
+      if(date.getTime() - this.state.ballTime > 500){
+        var x0 = this.state.currentStage*this.state.gap;
+        var x1 = position*this.state.gap;
+        var dist = x1-x0
+        this.updateBallX(x0, dist);
+        this.showBall(true);
+        this.state.ballTime = date.getTime()
+        this.setState({currentStage: position})
+        indicator.progress = position / (this.state.totalStages-1);
+      }
+    }
+  }
+  togglePosition(position){
+      this.processPosition(position)
+      if(this.state.cb) this.state.cb(position);
   }
   render() {
     var golfStyle = {
@@ -143,18 +206,18 @@ class Golf extends React.Component {
     var totalStages = this.state.totalStages;
     var currentStage = this.state.currentStage;
     var unlockedStages = this.state.unlockedStages;
-
     var togglePosition = this.togglePosition.bind(this);
     var positionNodes = this.state.stages.map(function(position, index){
       var x = position*gap;
       //console.log("currentStage " + currentStage)
       //console.log("position " + position)
+      var current = (currentStage == position) ? true : false;
       var on_off = (currentStage > position) ? true : false;
       var locked = (position > unlockedStages-1) ? true : false;
-      console.log(locked)
       return(
           <PositionItem
             x = {x}
+            current = {current}
             on_off = {on_off}
             locked = {locked}
             position = {position}
@@ -178,20 +241,22 @@ class PositionItem extends Component {
   initIcon(iconEl){
     if(!iconEl) return;
     //console.log(iconEl)
-    icon = MDCIconToggle.attachTo(iconEl);
+    var icon = MDCIconToggle.attachTo(iconEl);
   }
   onClick(event){
     //console.log(this.props.position)
     this.props.togglePosition(this.props.position)
-    //indicator.progress = this.props.position / (this.props.totalStages-1);
   }
   render() {
     //console.log(this.props)
     //window.innerWidth/2
     var x = this.props.x + 'px'
-    var backgroundColor = (this.props.on_off) ? 'blue' : 'white';
+    var backgroundColor = //(this.props.locked) ? 'black'   :
+                          (this.props.current) ? 'rgb(75, 255, 0)' :
+                          (this.props.on_off)  ? '#ccc'    : 'white';
     //console.log('this.props.on_off ' + this.props.on_off)
     var icon = (this.props.locked) ? 'lock' : 'golf_course';
+    //var icon = 'golf_course'
     var divStyle = {
       left: x,
       backgroundColor: backgroundColor
@@ -204,10 +269,11 @@ class PositionItem extends Component {
                aria-label="label XY"
                aria-pressed="false"
                tabIndex="0"
-               data-toggle-on = {'{"content": "' + icon + '", "label": "label X"}'}
-               data-toggle-off= {'{"content": "' + icon + '", "label": "label Y"}'} // lock
+               data-toggle-on = {'{"label": "label X"}'}
+               data-toggle-off= {'{"label": "label Y"}'} // lock
                onClick = {this.onClick.bind(this)}
                ref={this.initIcon}>
+               {icon}
             </i>
         </div>
       </div>

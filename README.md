@@ -1,7 +1,7 @@
 # Golf Widget
 
-Sample Widget
+A widget to proceed to different stages
 
-# Link
-https://inexh.github.io/a/index.html
+# Demo
+https://inexh.github.io/GolfWidget/index.html
 
