@@ -160,12 +160,14 @@ class Golf extends React.Component {
         this.state.ballTime = date.getTime()
         this.setState({currentStage: position})
         indicator.progress = position / (this.state.totalStages-1);
+        return true;
       }
     }
+    return false;
   }
   togglePosition(position){
-      this.processPosition(position)
-      if(this.state.cb) this.state.cb(position);
+      var bool = this.processPosition(position)
+      if(bool) if(this.state.cb) this.state.cb(position);
   }
   render() {
     var golfStyle = {
