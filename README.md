@@ -32,4 +32,4 @@ To clear the app
 renderEmpty('GolfWidget')
 
 # Demo
-https://inexh.github.io/GolfWidget/index.html
+https://inexh.github.io/GolfWidget/
