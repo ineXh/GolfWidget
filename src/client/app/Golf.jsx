@@ -39,6 +39,7 @@ var findKeyframesRule = function(rule){
           //console.error(error)
           continue;
         }
+        if(ss[i].cssRules == null) continue;
           for (var j = 0; j < ss[i].cssRules.length; j++) {
               if (ss[i].cssRules[j].name == rule)
                 //debugger;

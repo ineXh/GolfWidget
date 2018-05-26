@@ -24,7 +24,7 @@
     <script src="dist/bundle.js" type="text/javascript"></script>
     <script type="text/javascript">
       var currentStage = 0;
-      var totalStages = 10;
+      var totalStages = 8;
       var unlockedStages = 1;
       var clickedStage = function(stage){
         console.log('clicked ' + stage)
@@ -35,7 +35,7 @@
         {totalStages:  totalStages,
          currentStage: currentStage,
          unlockedStages: unlockedStages,
-         width: window.innerWidth*0.4,
+         width: window.innerWidth*0.8,
          cb: clickedStage
         });
       var prevStage = function(){
