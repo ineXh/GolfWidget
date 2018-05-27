@@ -2,6 +2,9 @@ import React, {Component} from 'react';
 //import {MDCLinearProgress} from '@material/linear-progress/dist/mdc.linearProgress';
 import {MDCLinearProgress} from '@material/linear-progress';
 import {MDCIconToggle} from '@material/icon-toggle';
+//var materials = require('./material-components-web.js');
+//import material from './material-components-web.js'
+//import main from './main.js'
 //import './css/styles/LinearProgressIndicatorCatalog.scss';
 //import './../../../linear-progress.scss';
 //import './css/styles/LinearProgressIndicatorCatalog.css';
@@ -252,8 +255,12 @@ class PositionItem extends Component {
   }
   initIcon(iconEl){
     if(!iconEl) return;
+    //console.log(mainbob)
     //console.log(iconEl)
-    var icon = MDCIconToggle.attachTo(iconEl);
+    //var icon = MDCIconToggle.attachTo(iconEl);
+    //console.log(mdc)
+    //console.log(material)
+    var icon = mdc.iconToggle.MDCIconToggle.attachTo(iconEl);
   }
   onClick(event){
     //console.log(this.props.position)
